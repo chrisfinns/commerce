@@ -1,0 +1,8 @@
+body {
+    padding: 10px;
+}
+
+.active_listing {
+    border: 1px;
+    color: red;
+}
