@@ -3,6 +3,13 @@ body {
 }
 
 .active_listing {
-    border: 1px;
     color: red;
 }
+
+.row {
+    border: solid;
+    border-color: lightgray;
+    padding: 2%; 
+    margin: 2%;
+}
+

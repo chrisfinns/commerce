@@ -1,13 +1,21 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+    <h2 class="active_listing">Active Listings</h2>
 
-    <div>
+    <div class="container">
     {% for auction in auctions %}
-        <div class="active_listing">
-            <h5> {{ auction.item_name }}</h5>
-            <p> {{ auction.description }}</p>
+        <div class="row listing">
+            <div class='col'>
+                <img src="{{ auction.image.url }}">
+            </div>
+            <div class="col">
+                <h5> {{ auction.item_name }}</h5>
+                <p><b>Price:</b> {{auction.starting_price}}</p>
+                <p>{{ auction.description }}</p>
+
+
+            </div>
         </div>
        
     {% endfor %}
