@@ -13,3 +13,7 @@ body {
     margin: 2%;
 }
 
+#timestamp {
+    color: gray;
+    font-size: small;
+}
