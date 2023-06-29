@@ -2,6 +2,18 @@
 
 {% block body %}
     <h3> Listing: {{ listing.item_name }}</h3>
+    <img src="{{ listing.image.url }}" width="350" height="350">
+        <p>{{ listing.description }}</p>
+        <p>Price: {{ currentPrice }}</p>
+    <div>
+        <h4>Comments</h4>
+        <div class="comments">
+            {% for comment in comments %}
+            <h6> <b>{{ comment.commenter }}</b> </h6>
 
-    <p>{{ listing.description }}</p>
+            <p> {{ comment.text }} </p>
+            
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

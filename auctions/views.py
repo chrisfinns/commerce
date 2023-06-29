@@ -3,9 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+import decimal
 
 
-from .models import User, Auctions
+from .models import User, Auctions, Comments, Bid
 
 
 def index(request):
@@ -84,7 +85,30 @@ def active(request):
 
 def listings(request, listing_id):
     listing = Auctions.objects.get(pk=listing_id)
+    comments = Comments.objects.filter(auction=listing_id)
+    bids = Bid.objects.filter(auction=listing_id)
+    #starting_price = Auctions.objects.get()
+    #highest_bid = Bid.objectsget
+
+    startingPrice = int(listing.starting_bid)
+    currentPrice = startingPrice
+
+    for bid in bids:
+        if bid.amount > decimal.Decimal(currentPrice):
+            currentPrice = bid.amount
+        print(currentPrice)
+
+
 
     return render(request, "auctions/listings.html", {
-        "listing": listing              #all the arugments in the HTML will come from this dict item
+        "listing": listing, 
+        "comments": comments,
+        "currentPrice": currentPrice,
+                    #all the arugments in the HTML will come from this dict item
     })
+
+
+
+def watch(request):
+
+    return render(request, "auctions/watchlist.html")

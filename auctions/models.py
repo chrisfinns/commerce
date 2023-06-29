@@ -1,50 +1,52 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from datetime import datetime
+from django.utils import timezone
 
 
 class User(AbstractUser):
-    #username
-    #email
-    #password
+
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64)
     date_joined = models.DateField(auto_now_add=True)
-    
 
-class Bids(models.Model):
     
-    # bid_amount, connect to the user/auction
-    amount = models.DecimalField(max_digits=14, decimal_places=2, blank=True)
-    #auction = 
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
-    #bidder =
-    #timestamp = 
+
 
 class Auctions(models.Model):
-    # auction_items, who was the user that bid on it, bid_amount
+  
     item_name = models.CharField(max_length=255)
     description = models.TextField()
     image = models.ImageField(upload_to='auction_images')
     start_time = models.DateField(auto_now_add=True)
-    end_time = models.DateTimeField(default=datetime.now + timedelta(days=7))
-    starting_price = models.DecimalField(max_digits=14, decimal_places=2)
-    #current_price = models.DecimalField(max_digits=14, decimal_places=2, blank=True)
-    #seller =
-    #is_active =
-  
+    #bid = models.ForeignKey(Bid, on_delete=models.CASCADE, default=0.00, related_name="bids")
+    starting_bid = models.DecimalField(max_digits=14, decimal_places=2)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    class Meta:
+        verbose_name_plural = "Auctions" 
 
     def __str__(self):
-        return f"{self.id}: {self.item_name} - {self.description}"
+        return f"{self.item_name} - {self.description}"
 
 
+class Bid(models.Model):
+    
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
+    bidder = models.ForeignKey(User, on_delete=models.CASCADE) 
+    auction = models.ForeignKey(Auctions, on_delete=models.CASCADE)
 
 
+    def __str__(self):
+        return f"{self.amount} on {self.auction}"
 
-class Comments():
-    #what auction is it linked to, user_comment, 
-    #auction
-    #commenter
-    #text
-    #timestamp
 
-    pass
+class Comments(models.Model):
+    auction = models.ForeignKey(Auctions, on_delete=models.CASCADE, related_name="listing")
+    commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user") 
+    text = models.TextField() 
+
+    def __str__(self):
+        return f"{self.text}"
