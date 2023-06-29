@@ -71,9 +71,10 @@ def register(request):
 
 
 def createListing(request):
+
+        
+    return render(request, "auctions/createlisting.html")
     
-    #return HttpResponse("Test")
-    pass
 
 def active(request):
     auctions = Auctions.objects.all()
