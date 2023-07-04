@@ -30,7 +30,7 @@ class Auctions(models.Model):
         verbose_name_plural = "Auctions" 
 
     def __str__(self):
-        return f"{self.item_name} - {self.description} - {self.watchlist}"
+        return f"{self.item_name} - {self.description}"
 
 
 class Bid(models.Model):
