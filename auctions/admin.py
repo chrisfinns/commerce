@@ -3,6 +3,7 @@ from .models import Auctions, User, Comments, Bid
 # Register your models here.
 class AuctionsAdmin(admin.ModelAdmin):
     list_display =("id", "item_name", "description", )
+    filter_horizontal = ('watchlist',)
 
 class MyUserAdmin(admin.ModelAdmin):
     list_display =("id","username", 'email')

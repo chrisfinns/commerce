@@ -3,7 +3,6 @@ from django.db import models
 from datetime import datetime
 from django.utils import timezone
 
-
 class User(AbstractUser):
 
     first_name = models.CharField(max_length=64)
@@ -25,11 +24,13 @@ class Auctions(models.Model):
     #bid = models.ForeignKey(Bid, on_delete=models.CASCADE, default=0.00, related_name="bids")
     starting_bid = models.DecimalField(max_digits=14, decimal_places=2)
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
+    watchlist = models.ManyToManyField(User, blank=True, related_name="watchlist")
+
     class Meta:
         verbose_name_plural = "Auctions" 
 
     def __str__(self):
-        return f"{self.item_name} - {self.description}"
+        return f"{self.item_name} - {self.description} - {self.watchlist}"
 
 
 class Bid(models.Model):

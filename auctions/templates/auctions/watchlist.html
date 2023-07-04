@@ -2,5 +2,22 @@
 
 {% block body %}
    <h3>Watchlist</h3>
+   {% for auction in watchlist_auctions %}
+        <div class="row listing">
+            <div class='col'>
+                <img src="{{ auction.image }}" width="300" height="300">
+            </div>
+            <div class="col">
+                <a href="{% url 'listing' auction.id %}"><h5> {{ auction.item_name }}</h5></a>
+                
+                <p><b>Price:</b> {{auction.starting_bid}}</p>
+                <p>{{ auction.description }}</p>
+                <p id="timestamp"><em>Created {{ auction.start_time }}</em></p>
+
+
+            </div>
+        </div>
+       
+    {% endfor %}
     
 {% endblock %}

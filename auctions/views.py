@@ -83,6 +83,7 @@ def listings(request, listing_id):
     listing = Auctions.objects.get(pk=listing_id)
     comments = Comments.objects.filter(auction=listing_id)
     bids = Bid.objects.filter(auction=listing_id)
+    watchlist = User.objects.get(auctions=listing_id)
     #starting_price = Auctions.objects.get()
     #highest_bid = Bid.objectsget
 
@@ -92,9 +93,7 @@ def listings(request, listing_id):
     for bid in bids:
         if bid.amount > decimal.Decimal(currentPrice):
             currentPrice = bid.amount
-        print(currentPrice)
-
-
+        #print(currentPrice)
 
     return render(request, "auctions/listings.html", {
         "listing": listing, 
@@ -127,5 +126,10 @@ def createlisting(request):
 
 
 def watch(request):
-
-    return render(request, "auctions/watchlist.html")
+    user = User.objects.get(username="Gaan")
+    watchlist_auctions = user.watchlist.all()
+    print(watchlist_auctions)
+       
+    return render(request, "auctions/watchlist.html", {
+        "watchlist_auctions": watchlist_auctions
+    })
