@@ -20,7 +20,7 @@ class Auctions(models.Model):
   
     item_name = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(upload_to='auction_images')
+    image = models.CharField(max_length=255)
     start_time = models.DateField(auto_now_add=True)
     #bid = models.ForeignKey(Bid, on_delete=models.CASCADE, default=0.00, related_name="bids")
     starting_bid = models.DecimalField(max_digits=14, decimal_places=2)

@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 import decimal
+from .forms import NewListing
+from django.contrib.auth.decorators import login_required
 
 
 from .models import User, Auctions, Comments, Bid
@@ -68,12 +70,6 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
-
-
-def createListing(request):
-
-        
-    return render(request, "auctions/createlisting.html")
     
 
 def active(request):
@@ -82,7 +78,6 @@ def active(request):
     return render(request, "auctions/index.html", {
         "auctions": auctions
     })
-
 
 def listings(request, listing_id):
     listing = Auctions.objects.get(pk=listing_id)
@@ -108,6 +103,27 @@ def listings(request, listing_id):
                     #all the arugments in the HTML will come from this dict item
     })
 
+@login_required
+def createlisting(request):
+    if request.method == "POST":
+        form = NewListing(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data.get("title")
+            descriptionForm = form.cleaned_data.get("description")
+            urlForm = form.cleaned_data.get("url")
+            starting_priceForm = form.cleaned_data.get("starting_price")
+            user_id = request.user
+            auction = Auctions(item_name=title, description=descriptionForm, image=urlForm, starting_bid = starting_priceForm, seller=user_id )
+            auction.save()
+
+
+    else:
+        form = NewListing()
+    
+
+    return render(request, "auctions/createlisting.html", {
+        "form": form,
+    })
 
 
 def watch(request):
