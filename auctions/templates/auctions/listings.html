@@ -21,15 +21,21 @@
     <h3>${{ currentPrice }}</h3>
 
     <div>
-        <p> **** bids so far. Your bid is the current bid</p>
+        <p> {{ bidcount }} bid(s) so far.</p>
         <form action="{% url 'bid' listing.id %}" method="post">
             {% csrf_token %}
 
             <input type="number" name="bid" value="">
-            <button type="submit">Place Bid</button>
+            <button type="submit">Place Bid</button> 
+            {% if messages %}
+            
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+                
+            {% endif %}
         </form>
-
-    </div>
+           </div>
     
     <div>
 

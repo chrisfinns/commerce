@@ -7,6 +7,8 @@ import decimal
 from .forms import NewListing, Watchlist
 from django.contrib.auth.decorators import login_required
 from django.db.models import Subquery, OuterRef, Max
+from django.contrib import messages
+
 
 
 from .models import User, Auctions, Comments, Bid
@@ -17,15 +19,12 @@ def index(request):
         
     for auction in auctions:
         current_bid = Bid.objects.filter(auction=auction).order_by('-amount').first()
-        auction.current_bid = current_bid.amount if current_bid else None
+        auction.current_bid = current_bid.amount if current_bid else auction.starting_bid
     
     return render(request, "auctions/index.html", {
         "auctions": auctions
     })
-    return render(request, "auctions/index.html", {
-        "auctions": auctions
-    })
-
+   
 
 
 def login_view(request):
@@ -80,23 +79,15 @@ def register(request):
         return render(request, "auctions/register.html")
     
 
-def active(request):
-    auctions = Auctions.objects.annotate(
-        current_bid=Subquery(
-            Bid.objects.filter(auction=OuterRef('pk')).values('auction')
-            .annotate(max_amount=Max('amount')).values('max_amount')
-        )
-    )
-    return render(request, "auctions/index.html", {
-        "auctions": auctions
-    })
+
 
 def listings(request, listing_id):
     listing = Auctions.objects.get(pk=listing_id)
     comments = Comments.objects.filter(auction=listing_id)
     bids = Bid.objects.filter(auction=listing_id)
     startingPrice = int(listing.starting_bid)
-    
+    count = Bid.objects.filter(auction=listing_id).count()
+
 ### BIDDING SYSTEM ###
     currentPrice = startingPrice
     for bid in bids:
@@ -120,6 +111,7 @@ def listings(request, listing_id):
         "listing": listing, 
         "comments": comments,
         "currentPrice": currentPrice,
+        "bidcount": count,
                     #all the arugments in the HTML will come from this dict item
     })
 
@@ -154,33 +146,38 @@ def watch(request):
         "watchlist_auctions": watchlist_auctions
     })
 
-def add_to_watchlist(request, listing_id):
-    
-    listing = Auctions.objects.get(pk=listing_id)
 
-    if request.method == "POST":
-            user = request.user
-
-            status = request.POST.get("watchlist")
-            print(status)
-            #if status == True:
-            #   user.watchlist.add(listing)
-                
-            #if status == False:
-            #    user.watchlist.remove(listing)
-            #print(status)
-
-    return redirect('listings', listing_id)
 
 @login_required
 def bid(request, listing_id):
     listing = Auctions.objects.get(pk=listing_id)
+    current_bid = Bid.objects.filter(auction=listing).order_by('-amount').first()
+#     bids = Bid.objects.filter(auction=listing_id)
+#     startingPrice = int(listing.starting_bid)
+# ### BIDDING SYSTEM ###
+#     currentPrice = startingPrice
+#     for bid in bids:
+#         if bid.amount > decimal.Decimal(currentPrice):
+#             currentPrice = bid.amount
     if request.method == "POST":
-
-        bidamount = request.POST.get("bid")
         user = request.user
-        print(bidamount)
-        bid = Bid(amount=bidamount, bidder=user, auction=listing)
-        print(bid)
-        bid.save()
+        bidamount = decimal.Decimal(request.POST.get("bid"))
+
+        if current_bid is None:
+            if bidamount >= listing.starting_bid:
+
+                bid = Bid(amount=bidamount, bidder=user, auction=listing)
+                bid.save()
+
+            else:
+                messages.warning(request, 'Invalid Bid')
+        
+        elif bidamount > current_bid.amount:
+
+            bid = Bid(amount=bidamount, bidder=user, auction=listing)
+            bid.save()
+        
+        else:
+            messages.warning(request, 'Invalid Bid') 
+
         return HttpResponseRedirect(reverse("listing", args=[listing.id]))
