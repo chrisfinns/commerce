@@ -3,8 +3,37 @@
 {% block body %}
     <h3> Listing: {{ listing.item_name }}</h3>
     <img src="{{ listing.image }}" width="350" height="350">
-        <p>{{ listing.description }}</p>
-        <p>Price: {{ currentPrice }}</p>
+    
+
+    <form action="{% url 'listing' listing.id  %}" method="post">
+        
+        {% csrf_token %}
+        {% if listing in user.watchlist.all %}
+            <button type="submit" name="watchlist" value="True"> Remove from Watchlist</button>
+
+        {% else %}
+        <button type="submit" name="watchlist" value="False">Add to Watchlist</button>
+        {% endif %}
+        
+    </form>
+    
+    <p>{{ listing.description }}</p>
+    <h3>${{ currentPrice }}</h3>
+
+    <div>
+        <p> **** bids so far. Your bid is the current bid</p>
+        <form action="{% url 'bid' listing.id %}" method="post">
+            {% csrf_token %}
+
+            <input type="number" name="bid" value="">
+            <button type="submit">Place Bid</button>
+        </form>
+
+    </div>
+    
+    <div>
+
+    </div>
     <div>
         <h4>Comments</h4>
         <div class="comments">
@@ -14,6 +43,7 @@
             <p> {{ comment.text }} </p>
             
             {% endfor %}
+
         </div>
     </div>
 {% endblock %}

@@ -12,8 +12,9 @@
             <div class="col">
                 <a href="{% url 'listing' auction.id %}"><h5> {{ auction.item_name }}</h5></a>
                 
-                <p><b>Price:</b> {{auction.starting_bid}}</p>
+                <p><b>Price:</b> {{auction.current_bid}}</p>
                 <p>{{ auction.description }}</p>
+                
                 <p id="timestamp"><em>Created {{ auction.start_time }}</em></p>
 
 

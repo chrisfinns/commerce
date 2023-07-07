@@ -25,3 +25,7 @@ class NewListing(forms.Form):
         'class': 'form-control',
         'style': 'width: 300px;', 
     }))
+
+
+class Watchlist(forms.Form):
+    status = forms.BooleanField(widget=forms.CheckboxInput(attrs={'onclick':'this.form.submit();'}),required=False, label="Add to Watchlist?")
