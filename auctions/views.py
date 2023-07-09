@@ -13,19 +13,26 @@ from django.contrib import messages
 
 from .models import User, Auctions, Comments, Bid
 
+    
+    
 
 def index(request):
+    
     auctions = Auctions.objects.all()
+
         
     for auction in auctions:
         current_bid = Bid.objects.filter(auction=auction).order_by('-amount').first()
         auction.current_bid = current_bid.amount if current_bid else auction.starting_bid
+        Auctions.update_status(auction)
+    
+    active = Auctions.objects.filter(is_active=True)
+
     
     return render(request, "auctions/index.html", {
-        "auctions": auctions
+        "auctions": active
     })
    
-
 
 def login_view(request):
     if request.method == "POST":
@@ -87,6 +94,9 @@ def listings(request, listing_id):
     bids = Bid.objects.filter(auction=listing_id)
     startingPrice = int(listing.starting_bid)
     count = Bid.objects.filter(auction=listing_id).count()
+    
+    Auctions.update_status(listing)
+
 
 ### BIDDING SYSTEM ###
     currentPrice = startingPrice
@@ -107,11 +117,14 @@ def listings(request, listing_id):
     if status == "False":
             user.watchlist.add(listing)
 
+    
+
     return render(request, "auctions/listings.html", {
         "listing": listing, 
         "comments": comments,
         "currentPrice": currentPrice,
         "bidcount": count,
+        "user": user
                     #all the arugments in the HTML will come from this dict item
     })
 
@@ -137,9 +150,9 @@ def createlisting(request):
         "form": form,
     })
 
-
+@login_required
 def watch(request):
-    user = User.objects.get(username="Gaan")
+    user = request.user
     watchlist_auctions = user.watchlist.all()
            
     return render(request, "auctions/watchlist.html", {
@@ -160,6 +173,8 @@ def bid(request, listing_id):
 #         if bid.amount > decimal.Decimal(currentPrice):
 #             currentPrice = bid.amount
     if request.method == "POST":
+        Auctions.update_status(listing)
+
         user = request.user
         bidamount = decimal.Decimal(request.POST.get("bid"))
 
@@ -181,3 +196,12 @@ def bid(request, listing_id):
             messages.warning(request, 'Invalid Bid') 
 
         return HttpResponseRedirect(reverse("listing", args=[listing.id]))
+
+
+def end_auction(request):
+
+#end when time is up
+
+#end when sellers closes auction
+
+    pass

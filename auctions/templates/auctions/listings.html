@@ -4,7 +4,13 @@
     <h3> Listing: {{ listing.item_name }}</h3>
     <img src="{{ listing.image }}" width="350" height="350">
     
+    <p>{{ user }} {{listing.seller}}</p>
 
+    {% if user == listing.seller and listing.is_active == True  %}
+    
+    <button type="submit" name="end_auction">End Auction</button>
+
+    {% endif %}
     <form action="{% url 'listing' listing.id  %}" method="post">
         
         {% csrf_token %}

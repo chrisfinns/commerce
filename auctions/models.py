@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 
 class User(AbstractUser):
@@ -16,15 +16,28 @@ class User(AbstractUser):
 
 
 class Auctions(models.Model):
+
+    def auctionlength():
+        return start_time + timezone.timedelta(days=7)
+
+
   
     item_name = models.CharField(max_length=255)
     description = models.TextField()
     image = models.CharField(max_length=255)
-    start_time = models.DateField(auto_now_add=True)
-    #bid = models.ForeignKey(Bid, on_delete=models.CASCADE, default=0.00, related_name="bids")
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(default=auctionlength)
+    is_active = models.BooleanField(default=True)
+
     starting_bid = models.DecimalField(max_digits=14, decimal_places=2)
     seller = models.ForeignKey(User, on_delete=models.CASCADE)
     watchlist = models.ManyToManyField(User, blank=True, related_name="watchlist")
+    winner = models.ForeignKey(User,null=True, blank=True, related_name="winner", on_delete=models.CASCADE)
+
+    def update_status(self):
+        if self.end_time and self.end_time <= timezone.now():
+            self.is_active = False
+            self.save()
 
     class Meta:
         verbose_name_plural = "Auctions" 

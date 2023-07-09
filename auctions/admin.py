@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import Auctions, User, Comments, Bid
 # Register your models here.
 class AuctionsAdmin(admin.ModelAdmin):
-    list_display =("id", "item_name", "description", )
+    list_display =("id", "item_name", "description", "start_time", "end_time")
     filter_horizontal = ('watchlist',)
 
 class MyUserAdmin(admin.ModelAdmin):
