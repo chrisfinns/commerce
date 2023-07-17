@@ -9,7 +9,7 @@ class MyUserAdmin(admin.ModelAdmin):
     list_display =("id","username", 'email')
 
 class CommentsAdmin(admin.ModelAdmin):
-    list_display = ("text",)
+    list_display = ("text", "commenter")
 
 class BidAdmin(admin.ModelAdmin):
     list_display =("id","amount", "bidder", "auction")

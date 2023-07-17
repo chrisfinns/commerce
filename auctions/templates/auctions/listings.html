@@ -2,37 +2,47 @@
 
 {% block body %}
     <h3> Listing: {{ listing.item_name }}</h3>
-    <img src="{{ listing.image }}" width="350" height="350">
+    <img src="{{ listing.image }}" class="img-responsive" width="350" height="350">
     
-    <p>{{ user }} {{listing.seller}}</p>
+    <p>Seller: {{listing.seller}}</p>
 
-    {% if user == listing.seller and listing.is_active == True  %}
-    
-    <button type="submit" name="end_auction">End Auction</button>
 
-    {% endif %}
     <form action="{% url 'listing' listing.id  %}" method="post">
         
         {% csrf_token %}
         {% if listing in user.watchlist.all %}
-            <button type="submit" name="watchlist" value="True"> Remove from Watchlist</button>
+            <button type="submit" name="watchlist" value="True" class="btn btn-primary"> Remove from Watchlist</button>
 
         {% else %}
-        <button type="submit" name="watchlist" value="False">Add to Watchlist</button>
+        <button type="submit" name="watchlist" value="False" class="btn btn-primary">Add to Watchlist</button>
         {% endif %}
         
     </form>
     
     <p>{{ listing.description }}</p>
+    <p>Category: {{ listing.category }}</p>
+
     <h3>${{ currentPrice }}</h3>
 
+    <div>
+        {% if user == listing.seller and listing.is_active %}
+        <form action="{% url 'end_auction' listing.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">End Auction</button>
+        </form>
+        {% endif %}
+    </div>
+
+    {% if request.user.is_authenticated %} 
+    {% if listing.is_active == True %}
+    <div></div>
     <div>
         <p> {{ bidcount }} bid(s) so far.</p>
         <form action="{% url 'bid' listing.id %}" method="post">
             {% csrf_token %}
 
             <input type="number" name="bid" value="">
-            <button type="submit">Place Bid</button> 
+            <button class="btn btn-primary" type="submit">Place Bid</button> 
             {% if messages %}
             
                 {% for message in messages %}
@@ -40,15 +50,42 @@
                 {% endfor %}
                 
             {% endif %}
-        </form>
-           </div>
-    
-    <div>
+        
 
+        </form>
     </div>
-    <div>
+
+    {% else %}
+        <h3>Auction Has Ended</h3>
+
+        <div>
+            <p><b>Winner:</b>{{ listing.winner }}</p>
+        </div>
+    {% endif %}
+
+    {% else %}
+        <p>Please login to place a bid</p>
+    {% endif %}
+    
+    {% if request.user == listing.winner %}
+
+        <H3>YOU HAVE WON THE AUCTION</H3>
+    {% endif %}
+   
+   
+    <div class="comment-section">
         <h4>Comments</h4>
-        <div class="comments">
+        {% if request.user.is_authenticated %} 
+
+        <div class="Comment-Form">
+            <form action="{% url 'add_comment' listing.id %}" method="post" >
+                {% csrf_token %}
+                <input type="text" name="comment-field" value="" class="input-lg">
+              <button type="submit" class="btn btn-primary">Post a comment</button> 
+            </form>
+        </div>
+        {% endif %}
+        <div class="comment-entries">
             {% for comment in comments %}
             <h6> <b>{{ comment.commenter }}</b> </h6>
 

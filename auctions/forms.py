@@ -1,4 +1,6 @@
 from django import forms
+from .models import Category
+
 
 
 
@@ -9,6 +11,7 @@ class NewListing(forms.Form):
         'class': 'form-control'
         }))
 
+    categories = forms.ModelMultipleChoiceField(queryset=Category.objects.all())
 
 
     description = forms.CharField(widget=forms.Textarea(attrs={
@@ -25,6 +28,7 @@ class NewListing(forms.Form):
         'class': 'form-control',
         'style': 'width: 300px;', 
     }))
+
 
 
 class Watchlist(forms.Form):

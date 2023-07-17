@@ -12,3 +12,11 @@ body {
     padding: 2%; 
     margin: 2%;
 }
+
+.comment-section {
+    margin: 10%;
+}
+
+.comment-entries {
+    padding:2%;
+}
